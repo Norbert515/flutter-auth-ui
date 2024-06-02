@@ -1,5 +1,6 @@
 import 'package:example/phone_sign_up.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 import './home.dart';
@@ -26,14 +27,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ShadApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-        ),
-      ),
       initialRoute: '/',
       routes: {
         '/': (context) => const SignUp(),

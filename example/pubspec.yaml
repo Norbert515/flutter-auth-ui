@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
   supabase_auth_ui:
     path: ../
+  shadcn_ui: ^0.5.2
+
 
 dev_dependencies:
   flutter_test:

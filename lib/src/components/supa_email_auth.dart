@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:supabase_auth_ui/src/localizations/supa_email_auth_localization.dart';
 import 'package:supabase_auth_ui/src/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -116,8 +117,8 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
   @override
   void initState() {
     super.initState();
-    _metadataControllers = Map.fromEntries((widget.metadataFields ?? []).map(
-        (metadataField) => MapEntry(metadataField, TextEditingController())));
+    _metadataControllers = Map.fromEntries((widget.metadataFields ?? [])
+        .map((metadataField) => MapEntry(metadataField, TextEditingController())));
   }
 
   @override
@@ -139,11 +140,10 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
+            ShadInputFormField(
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],
-              textInputAction:
-                  _forgotPassword ? TextInputAction.done : TextInputAction.next,
+              textInputAction: _forgotPassword ? TextInputAction.done : TextInputAction.next,
               validator: (value) {
                 if (value == null ||
                     value.isEmpty ||
@@ -152,18 +152,18 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                 }
                 return null;
               },
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.email),
-                label: Text(localization.enterEmail),
-              ),
               controller: _emailController,
+              prefix: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: const Icon(Icons.email),
+              ),
+              label: Text(localization.enterEmail),
             ),
             if (!_forgotPassword) ...[
               spacer(16),
-              TextFormField(
-                autofillHints: _isSigningIn
-                    ? [AutofillHints.password]
-                    : [AutofillHints.newPassword],
+              ShadInputFormField(
+                autofillHints:
+                    _isSigningIn ? [AutofillHints.password] : [AutofillHints.newPassword],
                 textInputAction: widget.metadataFields != null && !_isSigningIn
                     ? TextInputAction.next
                     : TextInputAction.done,
@@ -173,10 +173,11 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                   }
                   return null;
                 },
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock),
-                  label: Text(localization.enterPassword),
+                prefix: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: const Icon(Icons.lock),
                 ),
+                label: Text(localization.enterPassword),
                 obscureText: true,
                 controller: _passwordController,
               ),
@@ -184,23 +185,24 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
               if (widget.metadataFields != null && !_isSigningIn)
                 ...widget.metadataFields!
                     .map((metadataField) => [
-                          TextFormField(
+                          ShadInputFormField(
                             controller: _metadataControllers[metadataField],
-                            textInputAction:
-                                widget.metadataFields!.last == metadataField
-                                    ? TextInputAction.done
-                                    : TextInputAction.next,
-                            decoration: InputDecoration(
-                              label: Text(metadataField.label),
-                              prefixIcon: metadataField.prefixIcon,
+                            textInputAction: widget.metadataFields!.last == metadataField
+                                ? TextInputAction.done
+                                : TextInputAction.next,
+                            label: Text(metadataField.label),
+                            prefix: Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: metadataField.prefixIcon,
                             ),
                             validator: metadataField.validator,
                           ),
                           spacer(16),
                         ])
                     .expand((element) => element),
-              ElevatedButton(
-                child: (_isLoading)
+              ShadButton(
+                width: double.infinity,
+                text: (_isLoading)
                     ? SizedBox(
                         height: 16,
                         width: 16,
@@ -209,9 +211,11 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                           strokeWidth: 1.5,
                         ),
                       )
-                    : Text(_isSigningIn
-                        ? localization.signIn
-                        : localization.signUp),
+                    : Center(
+                        child: Text(
+                          _isSigningIn ? localization.signIn : localization.signUp,
+                        ),
+                      ),
                 onPressed: () async {
                   if (!_formKey.currentState!.validate()) {
                     return;
@@ -243,8 +247,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                     }
                   } catch (error) {
                     if (widget.onError == null && context.mounted) {
-                      context.showErrorSnackBar(
-                          '${localization.unexpectedError}: $error');
+                      context.showErrorSnackBar('${localization.unexpectedError}: $error');
                     } else {
                       widget.onError?.call(error);
                     }
@@ -258,16 +261,18 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
               ),
               spacer(16),
               if (_isSigningIn) ...[
-                TextButton(
+                ShadButton.ghost(
+                  width: double.infinity,
                   onPressed: () {
                     setState(() {
                       _forgotPassword = true;
                     });
                   },
-                  child: Text(localization.forgotPassword),
+                  text: Text(localization.forgotPassword),
                 ),
               ],
-              TextButton(
+              ShadButton.ghost(
+                width: double.infinity,
                 key: const ValueKey('toggleSignInButton'),
                 onPressed: () {
                   setState(() {
@@ -275,9 +280,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                     _isSigningIn = !_isSigningIn;
                   });
                 },
-                child: Text(_isSigningIn
-                    ? localization.dontHaveAccount
-                    : localization.haveAccount),
+                text: Text(_isSigningIn ? localization.dontHaveAccount : localization.haveAccount),
               ),
             ],
             if (_isSigningIn && _forgotPassword) ...[
@@ -349,8 +352,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
   Map<String, dynamic> _resolveMetadataFieldsData() {
     return widget.metadataFields != null
         ? _metadataControllers.map<String, dynamic>(
-            (metaDataField, controller) =>
-                MapEntry(metaDataField.key, controller.text))
+            (metaDataField, controller) => MapEntry(metaDataField.key, controller.text))
         : <String, dynamic>{};
   }
 }
