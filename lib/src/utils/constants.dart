@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
@@ -18,17 +19,16 @@ extension ShowSnackBar on BuildContext {
     Color? backgroundColor,
     String? actionLabel,
   }) {
-    ScaffoldMessenger.of(this).showSnackBar(SnackBar(
-      content: Text(
-        message,
-        style: textColor == null ? null : TextStyle(color: textColor),
+
+    ShadToaster.of(this).show(
+      ShadToast(
+        backgroundColor: backgroundColor,
+        description: Text(
+          message,
+          style: textColor == null ? null : TextStyle(color: textColor),
+        ),
       ),
-      backgroundColor: backgroundColor,
-      action: SnackBarAction(
-        label: actionLabel ?? 'ok',
-        onPressed: () {},
-      ),
-    ));
+    );
   }
 
   /// Displays a red snackbar indicating error
@@ -36,6 +36,15 @@ extension ShowSnackBar on BuildContext {
     String message, {
     String? actionLabel,
   }) {
+    ShadToaster.of(this).show(
+      ShadToast.destructive(
+        description: Text(message),
+        action: ShadButton.destructive(
+          text: const Text('Ok'),
+          onPressed: () => ShadToaster.of(this).hide(),
+        ),
+      ),
+    );
     showSnackBar(
       message,
       textColor: Theme.of(this).colorScheme.onErrorContainer,
